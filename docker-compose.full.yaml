@@ -1,4 +1,13 @@
 services:
+  ollama:
+    volumes:
+      - ollama:/root/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+
   searxng:
     image: searxng/searxng:latest
     container_name: searxng
@@ -7,29 +16,31 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./searxng-config/settings.yml:/etc/searxng/settings.yml:ro
+      - searxng:/etc/searxng
     environment:
       - BASE_URL=http://localhost:8080/
       - INSTANCE_NAME=openwebui-search
-      - SEARXNG_SECRET=your-secret-key-here
-      - SEARXNG_HOSTNAME=0.0.0.0
     restart: unless-stopped
 
   open-webui:
     build:
       context: .
+      args:
+        OLLAMA_BASE_URL: '/ollama'
       dockerfile: Dockerfile
+    image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     volumes:
       - open-webui:/app/backend/data
       - ./uploads:/app/backend/uploads
+    depends_on:
+      - ollama
+      - searxng
     ports:
       - "3000:8080"
     environment:
-      # Point to local Ollama instance
-      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - OLLAMA_BASE_URL=http://ollama:11434
       - SEARXNG_QUERY_URL=http://searxng:8080/search
-      # RAG and file handling settings
       - ENABLE_RAG=true
       - ENABLE_RAG_WEB_SEARCH=true
       - RAG_WEB_SEARCH_ENGINE=searxng
@@ -44,12 +55,12 @@ services:
     restart: unless-stopped
     networks:
       - openwebui
-    depends_on:
-      - searxng
 
 networks:
   openwebui:
     driver: bridge
 
 volumes:
+  ollama: {}
   open-webui: {}
+  searxng: {} 

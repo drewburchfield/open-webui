@@ -1,0 +1,83 @@
+# Server configuration
+server:
+    port: 8080
+    bind_address: "0.0.0.0"
+    secret_key: "your-secret-key-here"  # Change this to a secure value
+    base_url: http://localhost:8080/
+    image_proxy: false
+    http_protocol_version: "1.0"
+    private: false  # Allow access from other containers
+    limiter: false  # Disable rate limiting for internal use
+    method: "GET"   # Allow GET requests
+    cors_enabled: true  # Enable CORS
+
+# General settings
+general:
+    debug: false
+    instance_name: "openwebui-search"
+    enable_metrics: false
+
+# Search settings
+search:
+    safe_search: 0
+    autocomplete: "google"
+    default_lang: "en"
+    ban_time_on_fail: 0  # Disable banning
+    max_ban_time_on_fail: 0
+    formats:
+        - html
+        - json
+    default_format: "json"
+
+# UI settings
+ui:
+    default_theme: simple
+    default_locale: en
+    results_on_new_tab: false
+
+# DOI resolvers
+doi_resolvers:
+    oadoi.org: 'https://oadoi.org/'
+    doi.org: 'https://doi.org/'
+    doai.io: 'https://doai.io/'
+default_doi_resolver: 'doi.org'
+
+# Outgoing requests
+outgoing:
+    request_timeout: 3.0
+    max_request_timeout: 10.0
+    pool_connections: 100
+    pool_maxsize: 100
+    enable_http2: true
+    verify: true
+    max_redirects: 30
+    retries: 1
+    proxies:
+        http: ""
+        https: ""
+
+# Enable all engines by default
+engines:
+    - name: google
+      engine: google
+      shortcut: g
+      disabled: false
+    - name: duckduckgo
+      engine: duckduckgo
+      shortcut: ddg
+      disabled: false
+    - name: bing
+      engine: bing
+      shortcut: b
+      disabled: false
+    - name: wikipedia
+      engine: wikipedia
+      shortcut: w
+      disabled: false
+
+# Allow all clients
+client:
+    whitelist: []
+    blacklist: []
+
+use_default_settings: false  # Important: disable default settings to use our custom config 
