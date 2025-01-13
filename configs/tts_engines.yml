@@ -1,0 +1,6 @@
+engines:
+  kokoro-82m:
+    name: "Kokoro-82M (Local)"
+    type: "local"
+    model_path: "/models/Kokoro-82M"
+    device: "mps" 

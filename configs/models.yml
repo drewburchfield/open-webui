@@ -1,0 +1,7 @@
+models:
+  kokoro-82m:
+    name: "Kokoro-82M"
+    path: "/models/Kokoro-82M"
+    type: "tts"
+    engine: "transformers"
+    device: "mps" 
