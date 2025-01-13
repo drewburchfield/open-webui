@@ -1,0 +1,4 @@
+default:
+  text_cleaners: ["english_cleaners"]
+  add_blank: true
+  normalize: true 

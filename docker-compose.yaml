@@ -46,9 +46,7 @@ services:
       - open-webui:/app/backend/data
       - ./uploads:/app/backend/uploads:rw
       - ./storage:/app/backend/storage:rw
-      # Remove or comment out the configs volume mounts since we're not using them
-      # - ./configs:/app/configs:ro
-      # - ./configs/models.yml:/app/backend/config/models.yml:ro
+      - ./configs/tts:/app/configs/tts:ro
     ports:
       - "3000:8080"
     environment:
@@ -68,9 +66,33 @@ services:
       # File upload settings
       - FILE_UPLOAD_PATH=/app/backend/uploads
       - STORAGE_PATH=/app/backend/storage
-      # Remove all Kokoro-specific variables
-      - ENABLE_TTS=false
-      - USE_BROWSER_TTS=true
+      # TTS settings
+      - ENABLE_TTS=true
+      - USE_BROWSER_TTS=false
+      - TTS_SERVICES_CONFIG_DIR=/app/configs/tts
+      # For OpenAI/openedai-speech
+      - TTS_PROVIDER=openai
+      - TTS_OPENAI_API_BASE_URL=http://openedai-speech:8000/v1
+      - TTS_OPENAI_API_KEY=sk-111111111
+      - TTS_OPENAI_MODEL=tts-1
+      - TTS_OPENAI_VOICE=alloy
+      # OpenAI API integration
+      - ENABLE_OPENAI_API=true
+      - OPENAI_API_BASE_URLS=http://openedai-speech:8000/v1
+      - OPENAI_API_KEYS=sk-111111111
+      # Audio settings
+      - AUDIO_FORMAT=wav
+      - AUDIO_SAMPLE_RATE=24000
+      - AUDIO_CHANNELS=1
+      # Debug settings
+      - LOG_LEVEL=debug
+      - DEBUG=true
+      # Audio settings - Add these explicitly
+      - AUDIO_TTS_ENGINE=openai
+      - AUDIO_TTS_OPENAI_API_BASE_URL=http://openedai-speech:8000/v1
+      - AUDIO_TTS_OPENAI_API_KEY=sk-111111111
+      - AUDIO_TTS_MODEL=tts-1
+      - AUDIO_TTS_VOICE=alloy
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
@@ -79,10 +101,45 @@ services:
     depends_on:
       - pipelines
       - searxng
+      - openedai-speech
+
+  openedai-speech:
+    image: ghcr.io/matatonic/openedai-speech
+    container_name: openedai-speech
+    environment:
+      - 'TTS_HOME=/app/voices'
+      - 'HF_HOME=/app/voices'
+      - 'ENABLE_HD_MODELS=true'
+      - 'DEBUG=true'
+      - 'COQUI_TOS_AGREED=1'
+      - 'MODELS=tts-1'
+      - 'VOICES=alloy,echo,fable,onyx,nova,shimmer'
+      - 'SAMPLE_RATE=24000'
+      - 'AUDIO_FORMAT=wav'
+      - 'ENABLE_TRANSFORMERS=true'
+      - 'API_KEY=sk-111111111'
+      - 'API_BASE=http://localhost:8000/v1'
+    ports:
+      - "8087:8000"
+    volumes:
+      - openedai-voices:/app/voices
+      - openedai-config:/app/config
+      - ./data/openedai-speech/config/pre_process_map.default.yaml:/app/config/pre_process_map.default.yaml:ro
+      - ./data/openedai-speech/config/voice_to_speaker.default.yaml:/app/config/voice_to_speaker.default.yaml:ro
+    networks:
+      - openwebui
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   openwebui:
     driver: bridge
 
 volumes:
+  openedai-voices: {}
+  openedai-config: {}
   open-webui: {}
