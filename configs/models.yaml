@@ -1,7 +1,0 @@
-models:
-  kokoro-82m:
-    path: "/models/Kokoro-82M"
-    type: "transformers"
-    device: "mps"  # Use "cpu" if not on Apple Silicon
-    default: true  # Make this the default TTS model
-    priority: 1    # Give it highest priority 

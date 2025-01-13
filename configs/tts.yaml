@@ -1,8 +1,0 @@
-tts:
-  engine: kokoro-82m
-  disable_browser_tts: true
-  settings:
-    model: kokoro-82m
-    device: mps
-    sample_rate: 24000
-    voice_preset: default 

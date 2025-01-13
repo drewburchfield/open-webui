@@ -15,6 +15,28 @@ services:
       - SEARXNG_HOSTNAME=0.0.0.0
     restart: unless-stopped
 
+  pipelines:
+    build:
+      context: ./pipelines
+      dockerfile: Dockerfile
+      args:
+        MINIMUM_BUILD: "false"
+        USE_CUDA: "false"
+    container_name: pipelines
+    volumes:
+      - ./pipelines/pipelines:/app/pipelines:rw
+    ports:
+      - "9099:9099"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=9099
+      - API_KEY=0p3n-w3bu!
+      - DEBUG=True
+      - PIPELINES_DIR=/app/pipelines
+    networks:
+      - openwebui
+    restart: unless-stopped
+
   open-webui:
     build:
       context: .
@@ -24,9 +46,9 @@ services:
       - open-webui:/app/backend/data
       - ./uploads:/app/backend/uploads:rw
       - ./storage:/app/backend/storage:rw
-      - /Users/drewburchfield/dev/sandbox/Kokoro-82M:/models/Kokoro-82M:ro
-      - ./configs:/app/configs:ro
-      - ./configs/models.yml:/app/backend/config/models.yml:ro
+      # Remove or comment out the configs volume mounts since we're not using them
+      # - ./configs:/app/configs:ro
+      # - ./configs/models.yml:/app/backend/config/models.yml:ro
     ports:
       - "3000:8080"
     environment:
@@ -46,24 +68,16 @@ services:
       # File upload settings
       - FILE_UPLOAD_PATH=/app/backend/uploads
       - STORAGE_PATH=/app/backend/storage
-      # Voice model settings
-      - OPENWEBUI_MODELS_PATH=/models
-      - WHISPER_MODEL_PATH=/models/Kokoro-82M
-      - ENABLE_TTS=true
-      - TTS_ENGINE=kokoro-82m
-      - TTS_MODEL=kokoro-82m
-      - DEVICE=mps
-      - USE_BROWSER_TTS=false
-      - PREFER_CUSTOM_TTS=true
-      - CUSTOM_TTS_ENGINES=kokoro-82m
-      # Model registration
-      - REGISTER_CUSTOM_MODELS=true
+      # Remove all Kokoro-specific variables
+      - ENABLE_TTS=false
+      - USE_BROWSER_TTS=true
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
     networks:
       - openwebui
     depends_on:
+      - pipelines
       - searxng
 
 networks:
