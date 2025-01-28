@@ -3,4 +3,6 @@ echo: 1
 fable: 2
 onyx: 3
 nova: 4
-shimmer: 5 
+shimmer: 5
+en_US-libritts_r: 6
+en_GB-northern_english_male: 7 

@@ -1,0 +1,50 @@
+tts-1:
+  alloy:
+    model: voices/en_US-libritts_r-medium.onnx
+    speaker: 79
+  echo:
+    model: voices/en_US-libritts_r-medium.onnx
+    speaker: 134
+  fable:
+    model: voices/en_GB-northern_english_male-medium.onnx
+    speaker: 0
+  onyx:
+    model: voices/en_US-libritts_r-medium.onnx
+    speaker: 159
+  nova:
+    model: voices/en_US-libritts_r-medium.onnx
+    speaker: 107
+  shimmer:
+    model: voices/en_US-libritts_r-medium.onnx
+    speaker: 163
+  american_male:
+    model: voices/en_US-libritts_r-medium.onnx
+    speaker: 80  # Deep male voice from LibriTTS
+  british_male:
+    model: voices/en_GB-northern_english_male-medium.onnx
+    speaker: 0  # Default speaker for northern English male
+tts-1-hd:
+  alloy:
+    model: xtts
+    speaker: voices/alloy.wav
+  echo:
+    model: xtts
+    speaker: voices/echo.wav
+  fable:
+    model: xtts
+    speaker: voices/fable.wav
+  onyx:
+    model: xtts
+    speaker: voices/onyx.wav
+  nova:
+    model: xtts
+    speaker: voices/nova.wav
+  shimmer:
+    model: xtts
+    speaker: voices/shimmer.wav
+  american_male:
+    model: xtts
+    speaker: voices/en_US-libritts_r-medium.wav
+  british_male:
+    model: xtts
+    speaker: voices/en_GB-northern_english_male-medium.wav 
